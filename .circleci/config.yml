@@ -31,7 +31,7 @@ jobs:
           command: |
             .mvnw -B clean verify 
               Dquarkus.http.host=0.0.0.0 \
-              -Dmaven.compiler.releaseß=17
+              -Dmaven.compiler.release=17
 
 workflows:
   build_and_test:
