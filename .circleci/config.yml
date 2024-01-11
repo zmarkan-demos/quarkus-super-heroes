@@ -7,9 +7,11 @@ jobs:
     steps:
       - run: echo "hello world"
   
-  jvm_build_test:
-    docker:
-      - image: cimg/openjdk:17.0.9
+  jvm_build_test_rest-fights:
+    # docker:
+    #   - image: cimg/openjdk:17.0.9
+    machine:
+      image: ubuntu-2204:2023.10.1
     working_directory: ~/project/rest-fights
     steps:
       - checkout
@@ -33,8 +35,23 @@ jobs:
               Dquarkus.http.host=0.0.0.0 \
               -Dmaven.compiler.release=17
 
+  jvm_build_test_rest-heroes:
+    docker:
+      - image: cimg/openjdk:17.0.9
+    working_directory: ~/project/rest-heroes
+    steps:
+      - checkout
+      - run:
+          name: Build test JVM
+          command: |
+            ./mvnw -B clean verify 
+              Dquarkus.http.host=0.0.0.0 \
+              -Dmaven.compiler.release=17
+
+
 workflows:
   build_and_test:
     jobs:
       - hello_world
-      - jvm_build_test
+      - jvm_build_test_rest-fights
+      - jvm_build_test_rest-heroes
