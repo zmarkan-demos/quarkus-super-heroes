@@ -36,8 +36,10 @@ jobs:
               -Dmaven.compiler.release=17
 
   jvm_build_test_rest-heroes:
-    docker:
-      - image: cimg/openjdk:17.0.9
+    # docker:
+    #   - image: cimg/openjdk:17.0.9
+    machine:
+      image: ubuntu-2204:2023.10.1
     working_directory: ~/project/rest-heroes
     steps:
       - checkout
