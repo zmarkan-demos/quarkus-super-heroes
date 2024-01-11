@@ -6,8 +6,35 @@ jobs:
       - image: cimg/base:stable
     steps:
       - run: echo "hello world"
+  
+  jvm_build_test:
+    docker:
+      - image: cimg/openjdk:17.0.9
+    working_directory: ~/project/rest-fights
+    steps:
+      - checkout
+      # - name: Create env vars
+      #   if: matrix.project.openai-type
+      #   working-directory: ${{ matrix.project.name }}
+      #   run: |
+      #     echo "QUARKUS_PROFILE=${{ matrix.project.openai-type }}" >> $GITHUB_ENV && \
+      #     echo "QUARKUS_TEST_INTEGRATION_TEST_PROFILE=${{ matrix.project.openai-type }}" >> $GITHUB_ENV
+
+      # - name: "build-test-jvm-${{ matrix.project.name }}-java-${{ matrix.java }}-${{ matrix.project.openai-type }}"
+      #   working-directory: ${{ matrix.project.name }}
+      #   run: |
+      #     ./mvnw -B clean verify \
+      #       -Dquarkus.http.host=0.0.0.0 \
+      #       -Dmaven.compiler.release=${{ matrix.java }}
+      - run:
+          name: Build test JVM
+          command: |
+            .mvnw -B clean verify 
+              Dquarkus.http.host=0.0.0.0 \
+              -Dmaven.compiler.releaseß=17
 
 workflows:
   build_and_test:
     jobs:
       - hello_world
+      - jvm_build_test
