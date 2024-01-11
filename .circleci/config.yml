@@ -1,0 +1,13 @@
+version: 2.1
+
+jobs:
+  hello_world:
+    docker: 
+      - image: cimg/base:stable
+    steps:
+      - run: echo "hello world"
+
+workflows:
+  build_and_test:
+    jobs:
+      - hello_world
