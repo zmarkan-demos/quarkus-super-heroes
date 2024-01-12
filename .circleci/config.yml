@@ -13,11 +13,11 @@ jobs:
         type: string
     machine:
       image: ubuntu-2204:2023.10.1
-    working_directory: ~/project/<< parameters.project >>
     steps:
       - checkout
       - run:
           name: Build and test on the JVM
+          working_directory: << parameters.project >>
           command: |
             ./mvnw -B clean verify \
               -Dquarkus.http.host=0.0.0.0 \
@@ -27,21 +27,21 @@ jobs:
           when: always
           command: |
             mkdir ~/surefire-reports
-            cp target/surefire-reports/Test-io.** ~/surefire-reports
+            cp << parameters.project >>/target/surefire-reports/Test-io.** ~/surefire-reports
       - store_test_results:
           path: ~/surefire-reports
       - store_artifacts:
-          path: target/surefire-reports
+          path: << parameters.project >>/target/surefire-reports
       - run:
           name: Copy Failsafe reports
           when: always
           command: |
             mkdir ~/failsafe-reports
-            cp target/failsafe-reports/Test-io.** ~/failsafe-reports
+            cp << parameters.project >>/target/failsafe-reports/Test-io.** ~/failsafe-reports
       - store_test_results:
           path: ~/failsafe-reports
       - store_artifacts:
-          path: target/failsafe-reports
+          path: << parameters.project >>/target/failsafe-reports
 
       
 workflows:
