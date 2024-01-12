@@ -21,8 +21,29 @@ jobs:
           command: |
             ./mvnw -B clean verify \
               -Dquarkus.http.host=0.0.0.0 \
-              -Dmaven.compiler.release=17  
+              -Dmaven.compiler.release=17
+      - run:
+          name: Copy Surefire reports
+          when: always
+          command: |
+            mkdir /surefire-reports
+            cp target/surefire-reports/Test-io.** /surefire-reports
+      - store_test_results:
+          path: /surefire-reports
+      - store_artifacts:
+          path: target/surefire-reports
+      - run:
+          name: Copy Failsafe reports
+          when: always
+          command: |
+            mkdir /failsafe-reports
+            cp target/failsafe-reports/Test-io.** /failsafe-reports
+      - store_test_results:
+          path: /failsafe-reports
+      - store_artifacts:
+          path: target/failsafe-reports
 
+      
 workflows:
   build_and_test:
     jobs:
