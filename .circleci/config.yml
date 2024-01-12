@@ -28,7 +28,7 @@ jobs:
           command: |
             mkdir ~/surefire-reports
             cd << parameters.project >>
-            cp target/surefire-reports/Test-io* ~/surefire-reports
+            cp target/surefire-reports/TEST-io* ~/surefire-reports
       - store_test_results:
           path: ~/surefire-reports
       - store_artifacts:
@@ -39,7 +39,7 @@ jobs:
           command: |
             mkdir ~/failsafe-reports
             cd << parameters.project >>
-            cp target/failsafe-reports/Test-io* ~/failsafe-reports
+            cp target/failsafe-reports/TEST-io* ~/failsafe-reports
       - store_test_results:
           path: ~/failsafe-reports
       - store_artifacts:
