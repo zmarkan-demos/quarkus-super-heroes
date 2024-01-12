@@ -7,69 +7,38 @@ jobs:
     steps:
       - run: echo "hello world"
   
-  jvm_build_test_rest-fights:
-    # docker:
-    #   - image: cimg/openjdk:17.0.9
+  jvm-build-test:
+    parameters:
+      project:
+        type: string
     machine:
-      image: ubuntu-2204:2023.10.1ß
-    working_directory: ~/project/rest-fights
+      image: ubuntu-2204:2023.10.1
+    working_directory: ~/project/<< parameters.project >>
     steps:
       - checkout
-      # - name: Create env vars
-      #   if: matrix.project.openai-type
-      #   working-directory: ${{ matrix.project.name }}
-      #   run: |
-      #     echo "QUARKUS_PROFILE=${{ matrix.project.openai-type }}" >> $GITHUB_ENV && \
-      #     echo "QUARKUS_TEST_INTEGRATION_TEST_PROFILE=${{ matrix.project.openai-type }}" >> $GITHUB_ENV
-
-      # - name: "build-test-jvm-${{ matrix.project.name }}-java-${{ matrix.java }}-${{ matrix.project.openai-type }}"
-      #   working-directory: ${{ matrix.project.name }}
-      #   run: |
-      #     ./mvnw -B clean verify \
-      #       -Dquarkus.http.host=0.0.0.0 \
-      #       -Dmaven.compiler.release=${{ matrix.java }}
       - run:
-          name: Build test JVM
+          name: Build and test on the JVM
           command: |
             ./mvnw -B clean verify 
               Dquarkus.http.host=0.0.0.0 \
-              -Dmaven.compiler.release=17
-
-  jvm_build_test_rest-heroes:
-    # docker:
-    #   - image: cimg/openjdk:17.0.9
-    machine:
-      image: ubuntu-2204:2023.10.1
-    working_directory: ~/project/rest-heroes
-    steps:
-      - checkout
-      - run:
-          name: Build test JVM
-          command: |
-            ./mvnw -B clean verify 
-              Dquarkus.http.host=0.0.0.0 \
-              -Dmaven.compiler.release=17
-  
-  jvm-container-build-test_rest-heroes:
-    machine:
-      image: ubuntu-2204:2023.10.1
-    working_directory: ~/project/rest-heroes
-    steps:
-      - checkout
-      - run:
-          name: build test JVM container
-          command: | 
-            ./mvnw -B clean verify \
-              -Dquarkus.http.host=0.0.0.0 \
-              -Dmaven.compiler.release=17 \
-              -Dquarkus.container-image.build=true \
-              -Dquarkus.test.arg-line="--add-host host.docker.internal:host-gateway"
-
+              -Dmaven.compiler.release=17  
 
 workflows:
   build_and_test:
     jobs:
       - hello_world
-      - jvm_build_test_rest-fights
-      - jvm_build_test_rest-heroes
-      - jvm-container-build-test_rest-heroes
+      - jvm-build-test:
+          matrix:
+            parameters:
+              project:
+                - event-statistics
+                - rest-fights
+                - rest-heroes
+                - rest-villains
+                - rest-narration
+                - grpc-locations
+                - ui-super-heroes
+
+      # - jvm_build_test_rest-fights
+      # - jvm_build_test_rest-heroes
+      # - jvm-container-build-test_rest-heroes
