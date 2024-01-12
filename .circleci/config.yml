@@ -19,7 +19,7 @@ jobs:
       - run:
           name: Build and test on the JVM
           command: |
-            ./mvnw -B clean verify 
+            ./mvnw -B clean verify \
               Dquarkus.http.host=0.0.0.0 \
               -Dmaven.compiler.release=17  
 
