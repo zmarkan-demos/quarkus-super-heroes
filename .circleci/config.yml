@@ -11,7 +11,7 @@ jobs:
     # docker:
     #   - image: cimg/openjdk:17.0.9
     machine:
-      image: ubuntu-2204:2023.10.1
+      image: ubuntu-2204:2023.10.1ß
     working_directory: ~/project/rest-fights
     steps:
       - checkout
@@ -49,6 +49,21 @@ jobs:
             ./mvnw -B clean verify 
               Dquarkus.http.host=0.0.0.0 \
               -Dmaven.compiler.release=17
+  
+  jvm-container-build-test_rest-heroes:
+    machine:
+      image: ubuntu-2204:2023.10.1
+    working_directory: ~/project/rest-heroes
+    steps:
+      - checkout
+      - run:
+          name: build test JVM container
+          command: | 
+            ./mvnw -B clean verify \
+              -Dquarkus.http.host=0.0.0.0 \
+              -Dmaven.compiler.release=17 \
+              -Dquarkus.container-image.build=true \
+              -Dquarkus.test.arg-line="--add-host host.docker.internal:host-gateway"
 
 
 workflows:
@@ -57,3 +72,4 @@ workflows:
       - hello_world
       - jvm_build_test_rest-fights
       - jvm_build_test_rest-heroes
+      - jvm-container-build-test_rest-heroes
