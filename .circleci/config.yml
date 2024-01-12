@@ -26,20 +26,20 @@ jobs:
           name: Copy Surefire reports
           when: always
           command: |
-            mkdir /surefire-reports
-            cp target/surefire-reports/Test-io.** /surefire-reports
+            mkdir ~/surefire-reports
+            cp target/surefire-reports/Test-io.** ~/surefire-reports
       - store_test_results:
-          path: /surefire-reports
+          path: ~/surefire-reports
       - store_artifacts:
           path: target/surefire-reports
       - run:
           name: Copy Failsafe reports
           when: always
           command: |
-            mkdir /failsafe-reports
-            cp target/failsafe-reports/Test-io.** /failsafe-reports
+            mkdir ~/failsafe-reports
+            cp target/failsafe-reports/Test-io.** ~/failsafe-reports
       - store_test_results:
-          path: /failsafe-reports
+          path: ~/failsafe-reports
       - store_artifacts:
           path: target/failsafe-reports
 
