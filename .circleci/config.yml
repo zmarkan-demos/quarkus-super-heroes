@@ -25,9 +25,9 @@ jobs:
       - run:
           name: Copy Surefire reports
           when: always
-          working_directory: << parameters.project >>
           command: |
             mkdir ~/surefire-reports
+            cd << parameters.project >>
             cp target/surefire-reports/Test-io.** ~/surefire-reports
       - store_test_results:
           path: ~/surefire-reports
@@ -36,9 +36,9 @@ jobs:
       - run:
           name: Copy Failsafe reports
           when: always
-          working_directory: << parameters.project >>
           command: |
             mkdir ~/failsafe-reports
+            cd << parameters.project >>
             cp target/failsafe-reports/Test-io.** ~/failsafe-reports
       - store_test_results:
           path: ~/failsafe-reports
