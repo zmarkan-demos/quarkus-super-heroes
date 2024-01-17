@@ -64,7 +64,7 @@ jobs:
             # echo "CONTAINER_TAG=$(./compute-container-tag.sh ${{ env.APP_VERSION }} ${{ env.QUARKUS_VERSION }} "" ${{ matrix.java }} "${{ matrix.project.openai-type }}")" >> $GITHUB_ENV
             echo "CONTAINER_TAG=0.0.0.<< pipeline.number >>-jdk<< parameters.java-version >>" >> "$BASH_ENV"
       
-      # Container image name by default taken from << parameters.project >>/src/main/resources/application.properties
+      # Container image name by default taken from << parameters.project >>/src/main/resources/application.properties. Same for Container image registry and group deets
       - run:
           name: Build JVM Docker Image - << parameters.project >>
           command: |
@@ -73,6 +73,8 @@ jobs:
               -Dquarkus.http.host=0.0.0.0 \
               -Dquarkus.container-image.build=true \
               -Dquarkus.container-image.push=false \
+              -Dquarkus.container-image.registry=docker.io
+              -Dquarkus.container-image.group=zmarkan
               -Dquarkus.container-image.name=quarkus-super-heroes-<<parameters.project>> \
               -Dquarkus.container-image.tag=$CONTAINER_TAG-<< parameters.arch >> \
               -Dquarkus.docker.dockerfile-jvm-path=src/main/docker/Dockerfile.jvm \
