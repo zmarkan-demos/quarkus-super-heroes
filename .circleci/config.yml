@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   docker: circleci/docker@2.5.0
+  sonarcloud: sonarsource/sonarcloud@2.0.0
 
 jobs:  
   jvm-build-test:
@@ -84,7 +85,16 @@ jobs:
           image: zmarkan/quarkus-super-heroes-<< parameters.project>>
           tag: $CONTAINER_TAG
 
-        
+  sonar-scan:
+    machine: 
+      image: ubuntu-2204:2023.10.1
+    parameters:
+      project:
+        type: string
+    steps:
+      - checkout
+      - sonarcloud/scan:
+          project_root: << parameters.project >>
       
 workflows:
   build_and_test:
@@ -115,6 +125,21 @@ workflows:
                 - ui-super-heroes  
           context: 
             - docker_hub   
+    
+      - sonar-scan:
+          matrix:
+            parameters:
+              project: 
+                - event-statistics
+                - rest-fights
+                - rest-heroes
+                - rest-villains
+                - rest-narration
+                - grpc-locations
+                - ui-super-heroes  
+          context: 
+            - SonarCloud
+
       # - jvm_build_test_rest-fights
       # - jvm_build_test_rest-heroes
       # - jvm-container-build-test_rest-heroes
