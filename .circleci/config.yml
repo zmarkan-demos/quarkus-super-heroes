@@ -1,12 +1,9 @@
 version: 2.1
 
-jobs:
-  hello_world:
-    docker: 
-      - image: cimg/base:stable
-    steps:
-      - run: echo "hello world"
-  
+orbs:
+  docker: circleci/docker@2.5.0
+
+jobs:  
   jvm-build-test:
     parameters:
       project:
@@ -46,11 +43,50 @@ jobs:
       - store_artifacts:
           path: << parameters.project >>/target/failsafe-reports
 
+  build-push-container-images:
+    machine:
+      image: ubuntu-2204:2023.10.1
+    parameters:
+      project:
+        type: string
+      java-version:
+        type: string
+        default: '17'
+      arch: 
+        type: enum
+        default: amd64
+        enum: [amd64, arm64]
+    steps:
+      - checkout
+      - run: 
+          name: Create container tag
+          command: |
+            # echo "CONTAINER_TAG=$(./compute-container-tag.sh ${{ env.APP_VERSION }} ${{ env.QUARKUS_VERSION }} "" ${{ matrix.java }} "${{ matrix.project.openai-type }}")" >> $GITHUB_ENV
+            echo "CONTAINER_TAG=0.0.0.<< pipeline.number >>-jdk<< parameters.java-version >>" >> "$BASH_ENV"
+      
+      # Container image name by default taken from << parameters.project >>/src/main/resources/application.properties
+      - run:
+          name: Build JVM Docker Image - << parameters.project >>
+          command: |
+            ./mvnw -B clean package -DskipTests \
+              -Dmaven.compiler.release=<< parameters.java-version >> \
+              -Dquarkus.http.host=0.0.0.0 \
+              -Dquarkus.container-image.build=true \
+              -Dquarkus.container-image.push=false \
+              -Dquarkus.container-image.name=quarkus-super-heroes-<<parameters.project>> \
+              -Dquarkus.container-image.tag=$CONTAINER_TAG-<< parameters.arch >> \
+              -Dquarkus.docker.dockerfile-jvm-path=src/main/docker/Dockerfile.jvm \
+              -Dquarkus.docker.buildx.platform=linux/<< parameters.arch >>
+
+      - docker/push:
+          image: zmarkan/quarkus-super-heroes-<< parameters.project>>
+          tag: $CONTAINER_TAG
+
+        
       
 workflows:
   build_and_test:
     jobs:
-      - hello_world
       - jvm-build-test:
           matrix:
             parameters:
@@ -62,7 +98,21 @@ workflows:
                 - rest-narration
                 - grpc-locations
                 - ui-super-heroes
-
+      - build-push-container-images:
+          requires:
+            - jvm-build-test
+          matrix:
+            parameters:
+              project: 
+                - event-statistics
+                - rest-fights
+                - rest-heroes
+                - rest-villains
+                - rest-narration
+                - grpc-locations
+                - ui-super-heroes  
+          context: 
+            - docker_hub   
       # - jvm_build_test_rest-fights
       # - jvm_build_test_rest-heroes
       # - jvm-container-build-test_rest-heroes
