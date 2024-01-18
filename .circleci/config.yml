@@ -98,6 +98,7 @@ jobs:
           key: deps-v1-{{ checksum "pom.xml" }}-{{ checksum "<< parameters.project >>/pom.xml"}} 
           paths:
             - ~/.m2/repository
+      - docker/check
       - docker/push:
           image: zmarkan/quarkus-super-heroes-<< parameters.project>>
           tag: $CONTAINER_TAG-<< parameters.arch >>
