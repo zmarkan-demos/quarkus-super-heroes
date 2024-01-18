@@ -14,6 +14,11 @@ jobs:
     # resource_class: xlarge
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - deps-v1-{{ checksum "pom.xml" }}-{{ checksum "<< parameters.project >>/pom.xml"}} 
+            - deps-v1-{{ checksum "pom.xml"}}-
+            - deps-v1-
       - run:
           name: Build and test on the JVM
           working_directory: << parameters.project >>
@@ -21,6 +26,10 @@ jobs:
             ./mvnw -B clean verify \
               -Dquarkus.http.host=0.0.0.0 \
               -Dmaven.compiler.release=17
+      - save_cache:
+          key: deps-v1-{{ checksum "pom.xml" }}-{{ checksum "<< parameters.project >>/pom.xml"}} 
+          paths:
+            - ~/.m2/repository
       - run:
           name: Copy Surefire reports
           when: always
@@ -64,7 +73,11 @@ jobs:
           command: |
             # echo "CONTAINER_TAG=$(./compute-container-tag.sh ${{ env.APP_VERSION }} ${{ env.QUARKUS_VERSION }} "" ${{ matrix.java }} "${{ matrix.project.openai-type }}")" >> $GITHUB_ENV
             echo "CONTAINER_TAG=0.0.0.<< pipeline.number >>-jdk<< parameters.java-version >>" >> "$BASH_ENV"
-      
+      - restore_cache:
+          keys:
+            - deps-v1-{{ checksum "pom.xml" }}-{{ checksum "<< parameters.project >>/pom.xml"}} 
+            - deps-v1-{{ checksum "pom.xml"}}-
+            - deps-v1-
       # Container image name by default taken from << parameters.project >>/src/main/resources/application.properties. Same for Container image registry and group deets
       - run:
           name: Build JVM Docker Image - << parameters.project >>
@@ -81,10 +94,13 @@ jobs:
               -Dquarkus.container-image.tag=$CONTAINER_TAG-<< parameters.arch >> \
               -Dquarkus.docker.dockerfile-jvm-path=src/main/docker/Dockerfile.jvm \
               -Dquarkus.docker.buildx.platform=linux/<< parameters.arch >>
-
+      - save_cache:
+          key: deps-v1-{{ checksum "pom.xml" }}-{{ checksum "<< parameters.project >>/pom.xml"}} 
+          paths:
+            - ~/.m2/repository
       - docker/push:
           image: zmarkan/quarkus-super-heroes-<< parameters.project>>
-          tag: $CONTAINER_TAG
+          tag: $CONTAINER_TAG-<< parameters.arch >>
 
   sonar-scan:
     machine: 
