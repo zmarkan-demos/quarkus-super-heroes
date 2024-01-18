@@ -68,13 +68,14 @@ jobs:
       # Container image name by default taken from << parameters.project >>/src/main/resources/application.properties. Same for Container image registry and group deets
       - run:
           name: Build JVM Docker Image - << parameters.project >>
+          working_directory: << parameters.project >>
           command: |
             ./mvnw -B clean package -DskipTests \
               -Dmaven.compiler.release=<< parameters.java-version >> \
               -Dquarkus.http.host=0.0.0.0 \
               -Dquarkus.container-image.build=true \
               -Dquarkus.container-image.push=false \
-              -Dquarkus.container-image.registry=docker.io \
+              -Dquarkus.container-image.registry="" \
               -Dquarkus.container-image.group=zmarkan \
               -Dquarkus.container-image.name=quarkus-super-heroes-<<parameters.project>> \
               -Dquarkus.container-image.tag=$CONTAINER_TAG-<< parameters.arch >> \
