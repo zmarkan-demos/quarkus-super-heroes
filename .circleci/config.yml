@@ -101,6 +101,7 @@ workflows:
   build_and_test:
     jobs:
       - jvm-build-test:
+          name: jvm-build-test-<< matrix.project >>
           matrix:
             parameters:
               project:
@@ -112,8 +113,9 @@ workflows:
                 # - grpc-locations
                 - ui-super-heroes
       - build-push-container-images:
+          name: build-push-container-image-<< matrix.project >>
           requires:
-            - jvm-build-test
+            - jvm-build-test-<< matrix.project
           matrix:
             parameters:
               project: 
