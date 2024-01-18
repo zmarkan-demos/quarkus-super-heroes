@@ -104,12 +104,12 @@ workflows:
           matrix:
             parameters:
               project:
-                - event-statistics
-                - rest-fights
+                # - event-statistics
+                # - rest-fights
                 - rest-heroes
-                - rest-villains
-                - rest-narration
-                - grpc-locations
+                # - rest-villains
+                # - rest-narration
+                # - grpc-locations
                 - ui-super-heroes
       - build-push-container-images:
           requires:
@@ -117,29 +117,30 @@ workflows:
           matrix:
             parameters:
               project: 
-                - event-statistics
-                - rest-fights
+                # - event-statistics
+                # - rest-fights
                 - rest-heroes
-                - rest-villains
-                - rest-narration
-                - grpc-locations
+                # - rest-villains
+                # - rest-narration
+                # - grpc-locations
                 - ui-super-heroes  
           context: 
             - docker_hub   
-    
-      - sonar-scan:
-          matrix:
-            parameters:
-              project: 
-                - event-statistics
-                - rest-fights
-                - rest-heroes
-                - rest-villains
-                - rest-narration
-                - grpc-locations
-                - ui-super-heroes  
-          context: 
-            - SonarCloud
+
+      # Disable sonar for now
+      # - sonar-scan:
+      #     matrix:
+      #       parameters:
+      #         project: 
+      #           - event-statistics
+      #           - rest-fights
+      #           - rest-heroes
+      #           - rest-villains
+      #           - rest-narration
+      #           - grpc-locations
+      #           - ui-super-heroes  
+      #     context: 
+      #       - SonarCloud
 
       # - jvm_build_test_rest-fights
       # - jvm_build_test_rest-heroes
