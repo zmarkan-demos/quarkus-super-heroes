@@ -115,7 +115,7 @@ workflows:
       - build-push-container-images:
           name: build-push-container-image-<< matrix.project >>
           requires:
-            - jvm-build-test-<< matrix.project
+            - jvm-build-test-<< matrix.project >>
           matrix:
             parameters:
               project: 
