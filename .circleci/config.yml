@@ -88,7 +88,7 @@ jobs:
               -Dquarkus.http.host=0.0.0.0 \
               -Dquarkus.container-image.build=true \
               -Dquarkus.container-image.push=false \
-              -Dquarkus.container-image.registry="" \
+              -Dquarkus.container-image.registry=docker.io \
               -Dquarkus.container-image.group=zmarkan \
               -Dquarkus.container-image.name=quarkus-super-heroes-<<parameters.project>> \
               -Dquarkus.container-image.tag=$CONTAINER_TAG-<< parameters.arch >> \
