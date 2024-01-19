@@ -134,7 +134,7 @@ jobs:
                 command: |
                   ./mvnw -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pit-coverage \
                     -Dquarkus.http.host=0.0.0.0 \
-                    -Dmaven.compiler.release=${{ env.BASE_JAVA_VERSION }} \
+                    -Dmaven.compiler.release=17 \
                     -Dquarkus.package.write-transformed-bytecode-to-build-output=true \
                     -Dquarkus.quinoa.package-manager-command.test="run coverage" \
                     -Dsonar.host.url=https://sonarcloud.io \
