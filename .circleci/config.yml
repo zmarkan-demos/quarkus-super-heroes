@@ -135,7 +135,7 @@ jobs:
               -Dsonar.host.url=https://sonarcloud.io \
               # TODO:N This is hardcoded at the mo
               -Dsonar.organization=zmarkan-demos \
-              -Dsonar.projectKey=zmarkan-demos_quarkus-super-heroes-<< parameters.project >> \
+              -Dsonar.projectKey=zmarkan-demos_quarkus-super-heroes_<< parameters.project >> \
               -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml \
               -Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports
       
@@ -190,22 +190,6 @@ workflows:
                 - ui-super-heroes  
           context: 
             - docker_hub   
-
-      # Disable sonar for now
-      # - sonar-scan-orb:
-      #     matrix:
-      #       parameters:
-      #         project: 
-      #           # - event-statistics
-      #           # - rest-fights
-      #           - rest-heroes
-      #           # - rest-villains
-      #           # - rest-narration
-      #           # - grpc-locations
-      #           # - ui-super-heroes  
-      #     context: 
-      #       - SonarCloud
-      
       - sonar-scan-mvn:
           matrix:
             parameters:
