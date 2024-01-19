@@ -115,10 +115,10 @@ jobs:
           project_root: << parameters.project >>
 
   sonar-scan-mvn:
-    docker:
-      - image: 'cimg/openjdk:17.0'
-    # machine:
-    #   image: ubuntu-2204:2023.10.1
+    # docker:
+    #   - image: 'cimg/openjdk:17.0'
+    machine:
+      image: ubuntu-2204:2023.10.1
     parameters:
       project:
         type: string
