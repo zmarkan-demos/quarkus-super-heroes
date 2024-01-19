@@ -133,6 +133,7 @@ jobs:
               -Dmaven.compiler.release=17 \
               -Dquarkus.package.write-transformed-bytecode-to-build-output=true \
               -Dsonar.host.url=https://sonarcloud.io \
+              # TODO:N This is hardcoded at the mo
               -Dsonar.organization=zmarkan-demos \
               -Dsonar.projectKey=zmarkan-demos_quarkus-super-heroes-<< parameters.project >> \
               -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml \
@@ -209,12 +210,12 @@ workflows:
           matrix:
             parameters:
               project: 
-                # - event-statistics
-                # - rest-fights
+                - event-statistics
+                - rest-fights
                 - rest-heroes
-                # - rest-villains
-                # - rest-narration
-                # - grpc-locations
+                - rest-villains
+                - rest-narration
+                - grpc-locations
                 # - ui-super-heroes
           context:
             - SonarCloud
