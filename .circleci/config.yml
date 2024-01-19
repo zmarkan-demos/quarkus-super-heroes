@@ -124,19 +124,47 @@ jobs:
         type: string
     steps:
       - checkout
-      - run:
-          name: Run Sonar scan
-          working_directory: << parameters.project >>
-          command: |
-            ./mvnw -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pit-coverage \
-              -Dquarkus.http.host=0.0.0.0 \
-              -Dmaven.compiler.release=17 \
-              -Dquarkus.package.write-transformed-bytecode-to-build-output=true \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.organization=zmarkan-demos \
-              -Dsonar.projectKey=zmarkan-demos_quarkus-super-heroes_<< parameters.project >> \
-              -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml \
-              -Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports
+      - when:
+          condition:
+              equal: [ "ui-super-heroes", << parameters.project >> ]
+          steps:
+            - run:
+                name: Run Sonar Scan for UI project
+                working_directory: << parameters.project >>
+                command: |
+                  ./mvnw -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pit-coverage \
+                    -Dquarkus.http.host=0.0.0.0 \
+                    -Dmaven.compiler.release=${{ env.BASE_JAVA_VERSION }} \
+                    -Dquarkus.package.write-transformed-bytecode-to-build-output=true \
+                    -Dquarkus.quinoa.package-manager-command.test="run coverage" \
+                    -Dsonar.host.url=https://sonarcloud.io \
+                    -Dsonar.organization=zmarkan-demos \
+                    -Dsonar.projectKey=zmarkan-demos_quarkus-super-heroes_<< parameters.project >> \
+                    -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml \
+                    -Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports \
+                    -Dsonar.test.inclusions="**/*.test.js" \
+                    -Dsonar.exclusions="**/*.test.js" \
+                    -Dsonar.coverage.exclusions="src/test/java/**/*" \
+                    -Dsonar.javascript.lcov.reportPaths=src/main/webui/coverage/lcov.info \
+                    -Dsonar.sources=src/main/java,src/test/java,src/main/webui/src
+
+      - unless:
+          condition:
+              equal: [ "ui-super-heroes", << parameters.project >> ]
+          steps:
+            - run:
+                name: Run Sonar scan - non UI project
+                working_directory: << parameters.project >>
+                command: |
+                  ./mvnw -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pit-coverage \
+                    -Dquarkus.http.host=0.0.0.0 \
+                    -Dmaven.compiler.release=17 \
+                    -Dquarkus.package.write-transformed-bytecode-to-build-output=true \
+                    -Dsonar.host.url=https://sonarcloud.io \
+                    -Dsonar.organization=zmarkan-demos \
+                    -Dsonar.projectKey=zmarkan-demos_quarkus-super-heroes_<< parameters.project >> \
+                    -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml \
+                    -Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports
       
 
       # - name: Sonar scan (Non-ui project)
@@ -172,11 +200,26 @@ workflows:
                 - rest-narration
                 - grpc-locations
                 - ui-super-heroes
+ 
+      - sonar-scan-mvn:
+          name: sonar-scan-<< matrix.project >>
+          matrix:
+            parameters:
+              project: 
+                - event-statistics
+                - rest-fights
+                - rest-heroes
+                - rest-villains
+                - rest-narration
+                - grpc-locations
+                - ui-super-heroes
+          context:
+            - SonarCloud
       - build-push-container-images:
           name: build-push-container-image-<< matrix.project >>
           requires:
             - jvm-build-test-<< matrix.project >>
-            # - sonar-scan-mvn-<< matrix.project >>
+            - sonar-scan-<< matrix.project >>
           matrix:
             parameters:
               project: 
@@ -188,20 +231,7 @@ workflows:
                 - grpc-locations
                 - ui-super-heroes  
           context: 
-            - docker_hub   
-      - sonar-scan-mvn:
-          matrix:
-            parameters:
-              project: 
-                - event-statistics
-                - rest-fights
-                - rest-heroes
-                - rest-villains
-                - rest-narration
-                - grpc-locations
-                # - ui-super-heroes
-          context:
-            - SonarCloud
+            - docker_hub  
 
       # - jvm_build_test_rest-fights
       # - jvm_build_test_rest-heroes
