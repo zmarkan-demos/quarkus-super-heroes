@@ -128,13 +128,13 @@ jobs:
           name: Run Sonar scan
           working_directory: << parameters.project >>
           command: |
-            ./mvnw -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar -Pit-coverage \
+            ./mvnw -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pit-coverage \
               -Dquarkus.http.host=0.0.0.0 \
               -Dmaven.compiler.release=17 \
               -Dquarkus.package.write-transformed-bytecode-to-build-output=true \
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.organization=zmarkan-demos \
-              -Dsonar.projectKey=zmarkan-demos-quarkus-super-heroes-<< parameters.project>> \
+              -Dsonar.projectKey=zmarkan-demos_quarkus-super-heroes-rest-heroes \
               -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml \
               -Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports
       
