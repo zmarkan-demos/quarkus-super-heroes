@@ -128,7 +128,7 @@ jobs:
           name: Run Sonar scan
           working_directory: << parameters.project >>
           command: |
-            ./mvnw -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pit-coverage \
+            ./mvnw -eB clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pit-coverage \
               -Dquarkus.http.host=0.0.0.0 \
               -Dmaven.compiler.release=17 \
               -Dquarkus.package.write-transformed-bytecode-to-build-output=true \
