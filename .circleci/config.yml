@@ -103,7 +103,7 @@ jobs:
           image: zmarkan/quarkus-super-heroes-<< parameters.project>>
           tag: $CONTAINER_TAG-<< parameters.arch >>
 
-  sonar-scan:
+  sonar-scan-orb:
     machine: 
       image: ubuntu-2204:2023.10.1
     parameters:
@@ -113,6 +113,51 @@ jobs:
       - checkout
       - sonarcloud/scan:
           project_root: << parameters.project >>
+
+  sonar-scan-mvn:
+    docker:
+      - image: 'cimg/openjdk:17.0'
+    # machine:
+    #   image: ubuntu-2204:2023.10.1
+    parameters:
+      project:
+        type: string
+    steps:
+      - checkout
+      - run:
+          name: Run Sonar scan
+          command: |
+            ./mvnw -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pit-coverage \
+              -Dquarkus.http.host=0.0.0.0 \
+              -Dmaven.compiler.release=${{ env.BASE_JAVA_VERSION }} \
+              -Dquarkus.package.write-transformed-bytecode-to-build-output=true \
+              # -Dsonar.host.url=${{ env.SONAR_HOST_URL }} \
+              # -Dsonar.organization=${{ env.SONAR_ORG }} \
+              -Dsonar.organization=zmarkan-demos \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.projectKey=zmarkan-demos-quarkus-super-heroes-<< parameters.project>> \
+              # -Dsonar.projectKey=${{ env.SONAR_ORG }}_${{ matrix.project }} \
+              -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml \
+              -Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports
+      
+
+      # - name: Sonar scan (Non-ui project)
+      #   if: matrix.project != 'ui-super-heroes'
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #   working-directory: ${{ matrix.project }}
+      #   run: |
+      #     ./mvnw -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pit-coverage \
+      #       -Dquarkus.http.host=0.0.0.0 \
+      #       -Dmaven.compiler.release=${{ env.BASE_JAVA_VERSION }} \
+      #       -Dquarkus.package.write-transformed-bytecode-to-build-output=true \
+      #       -Dsonar.host.url=${{ env.SONAR_HOST_URL }} \
+            # -Dsonar.organization=${{ env.SONAR_ORG }} \
+      #       -Dsonar.projectKey=${{ env.SONAR_ORG }}_${{ matrix.project }} \
+      #       -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml \
+      #       -Dsonar.junit.reportPaths=target/surefire-reports,target/failsafe-reports
+
       
 workflows:
   build_and_test:
@@ -133,6 +178,7 @@ workflows:
           name: build-push-container-image-<< matrix.project >>
           requires:
             - jvm-build-test-<< matrix.project >>
+            # - sonar-scan-mvn-<< matrix.project >>
           matrix:
             parameters:
               project: 
@@ -147,19 +193,33 @@ workflows:
             - docker_hub   
 
       # Disable sonar for now
-      # - sonar-scan:
+      # - sonar-scan-orb:
       #     matrix:
       #       parameters:
       #         project: 
-      #           - event-statistics
-      #           - rest-fights
+      #           # - event-statistics
+      #           # - rest-fights
       #           - rest-heroes
-      #           - rest-villains
-      #           - rest-narration
-      #           - grpc-locations
-      #           - ui-super-heroes  
+      #           # - rest-villains
+      #           # - rest-narration
+      #           # - grpc-locations
+      #           # - ui-super-heroes  
       #     context: 
       #       - SonarCloud
+      
+      - sonar-scan-mvn:
+          matrix:
+            parameters:
+              project: 
+                # - event-statistics
+                # - rest-fights
+                - rest-heroes
+                # - rest-villains
+                # - rest-narration
+                # - grpc-locations
+                # - ui-super-heroes
+          context:
+            - SonarCloud
 
       # - jvm_build_test_rest-fights
       # - jvm_build_test_rest-heroes
