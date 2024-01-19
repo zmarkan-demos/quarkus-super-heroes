@@ -129,7 +129,7 @@ jobs:
           command: |
             ./mvnw -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pit-coverage \
               -Dquarkus.http.host=0.0.0.0 \
-              -Dmaven.compiler.release=${{ env.BASE_JAVA_VERSION }} \
+              -Dmaven.compiler.release=17 \
               -Dquarkus.package.write-transformed-bytecode-to-build-output=true \
               # -Dsonar.host.url=${{ env.SONAR_HOST_URL }} \
               # -Dsonar.organization=${{ env.SONAR_ORG }} \
