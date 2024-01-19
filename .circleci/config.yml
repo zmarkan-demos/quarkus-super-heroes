@@ -126,6 +126,7 @@ jobs:
       - checkout
       - run:
           name: Run Sonar scan
+          working_directory: << parameters.project >>
           command: |
             ./mvnw -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pit-coverage \
               -Dquarkus.http.host=0.0.0.0 \
