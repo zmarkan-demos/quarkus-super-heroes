@@ -123,7 +123,7 @@ jobs:
                 name: Run Sonar Scan for UI project
                 working_directory: << parameters.project >>
                 command: |
-                  ./mvnb clean install
+                  ./mvnw clean install
                   ./mvnw -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pit-coverage \
                     -Dquarkus.http.host=0.0.0.0 \
                     -Dmaven.compiler.release=17 \
@@ -148,7 +148,7 @@ jobs:
                 name: Run Sonar scan - non UI project
                 working_directory: << parameters.project >>
                 command: |
-                  ./mvnb clean install
+                  ./mvnw clean install
                   ./mvnw -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pit-coverage \
                     -Dquarkus.http.host=0.0.0.0 \
                     -Dmaven.compiler.release=17 \
