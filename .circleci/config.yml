@@ -103,16 +103,6 @@ jobs:
           image: zmarkan/quarkus-super-heroes-<< parameters.project>>
           tag: $CONTAINER_TAG-<< parameters.arch >>
 
-    machine: 
-      image: ubuntu-2204:2023.10.1
-    parameters:
-      project:
-        type: string
-    steps:
-      - checkout
-      - sonarcloud/scan:
-          project_root: << parameters.project >>
-
   sonar-scan-mvn:
     # docker:
     #   - image: 'cimg/openjdk:17.0'
