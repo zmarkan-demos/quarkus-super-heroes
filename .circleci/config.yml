@@ -11,7 +11,7 @@ jobs:
         type: string
     machine:
       image: ubuntu-2204:2023.10.1
-    # resource_class: xlarge
+    resource_class: xlarge
     steps:
       - checkout
       - restore_cache:
@@ -103,7 +103,6 @@ jobs:
           image: zmarkan/quarkus-super-heroes-<< parameters.project>>
           tag: $CONTAINER_TAG-<< parameters.arch >>
 
-  sonar-scan-orb:
     machine: 
       image: ubuntu-2204:2023.10.1
     parameters:
